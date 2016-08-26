@@ -1,0 +1,116 @@
+for x in exp/*/decode*; do [ -d $x ] && grep WER $x/wer_* | utils/best_wer.sh; done > result
+
+exit 0
+
+# Monophone, MFCC+delta+accel
+%WER 27.50 [ 2139 / 7777, 28 ins, 64 del, 2047 sub ] exp/mono/decode_test/wer_9_0.0
+
+# MFCC+delta+accel
+%WER 14.74 [ 1146 / 7777, 30 ins, 26 del, 1090 sub ] exp/tri1/decode_test/wer_9_1.0
+
+# MFCC+delta+accel (on top of better alignments)
+%WER 14.47 [ 1125 / 7777, 32 ins, 23 del, 1070 sub ] exp/tri2a/decode_test/wer_9_1.0
+
+# LDA+MLLT
+%WER 11.50 [ 894 / 7777, 22 ins, 19 del, 853 sub ] exp/tri2b/decode_test/wer_9_1.0
+
+# Some MMI/MPE experiments (MMI, boosted MMI, MPE) on top of the LDA+MLLT system.
+%WER 11.51 [ 895 / 7777, 18 ins, 16 del, 861 sub ] exp/tri2b_mmi_b0.05/decode_it3/wer_9_0.5
+%WER 11.56 [ 899 / 7777, 19 ins, 17 del, 863 sub ] exp/tri2b_mmi_b0.05/decode_it4/wer_9_0.5
+%WER 11.74 [ 913 / 7777, 18 ins, 17 del, 878 sub ] exp/tri2b_mmi/decode_it3/wer_9_0.5
+%WER 11.74 [ 913 / 7777, 15 ins, 21 del, 877 sub ] exp/tri2b_mmi/decode_it4/wer_9_1.0
+%WER 10.94 [ 851 / 7777, 21 ins, 19 del, 811 sub ] exp/tri2b_mpe/decode_it3/wer_9_1.0
+%WER 10.93 [ 850 / 7777, 21 ins, 17 del, 812 sub ] exp/tri2b_mpe/decode_it4/wer_9_1.0
+
+# LDA+MLLT+SAT
+%WER 10.13 [ 395 / 3900, 26 ins, 1 del, 368 sub ] exp/tri3b/decode_dev/wer_9_1.0
+%WER 12.36 [ 482 / 3900, 22 ins, 1 del, 459 sub ] exp/tri3b/decode_dev.si/wer_9_1.0
+
+# LDA+MLLT+SAT+MMI (MMI on top of the SAT system)
+
+# LDA+MLLT+SAT+fMMI (fMMI+MMI on top of this SAT system) Various configurations.  
+# Note: it doesn't really help here.  Probably not enough data.
+
+# These are some experiments with "raw-fMLLR": fMLLR on the raw MFCCs, but
+# computed with the LDA+MLLT model (it's complicated).  Compare with 3b.  Results
+# are pretty similar.  Main anticipated use is prior to neural net training.
+
+
+# Some "SGMM2" experiments.  SGMM2 is a new version of the code that
+# has tying of the substates a bit like "state-clustered tied mixture" systems;
+# and which has speaker-dependent mixture weights.
+# we don't any longer show the old SGMM results, although the script is still
+# there, commented out.
+
+# This is testing an option "--zero-if-disjoint true" to MMI-- no clear difference here.
+
+# sgmm2_4c is as 4a but starting from the raw-fMLLR features.  No clear difference.
+
+## HERE
+
+# Deep neural net -- various types of hybrid system.
+
+ # when I ran this before I got this:
+ # prob. just random.
+ # %WER 1.72 [ 216 / 12533, 25 ins, 38 del, 153 sub ] exp/nnet4b_gpu/decode/wer_4
+ # %WER 8.34 [ 1045 / 12533, 94 ins, 146 del, 805 sub ] exp/nnet4b_gpu/decode_ug/wer_10
+
+# this another unadapted setup:
+ 
+# Discriminatively trained system (using SMBR, on CPU)
+
+# Discriminatively trained system (using SMBR, on GPU)
+
+# Discriminatively trained system (using p-norm rather than tanh nonlinearities, using SMBR, on GPU)
+
+# Discriminatively trained system on top of ensemble trained p-norm network (using SMBR, on GPU)
+
+
+# DNN systems (Karel - 25.9.2014)
+# Per-frame cross-entropy training
+%WER 7.34 [ 571 / 7777, 19 ins, 10 del, 542 sub ] exp/dnn4_pretrain-dbn_dnn/decode_test/wer_5_1.0
+
+# Sequence-based sMBR training
+%WER 8.13 [ 317 / 3900, 13 ins, 2 del, 302 sub ] exp/dnn4_pretrain-dbn_dnn_smbr/decode_dev_it1/wer_8_1.0
+%WER 7.77 [ 303 / 3900, 14 ins, 2 del, 287 sub ] exp/dnn4_pretrain-dbn_dnn_smbr/decode_dev_it6/wer_6_1.0
+%WER 7.16 [ 557 / 7777, 21 ins, 8 del, 528 sub ] exp/dnn4_pretrain-dbn_dnn_smbr/decode_test_it1/wer_4_1.0
+%WER 7.14 [ 555 / 7777, 20 ins, 8 del, 527 sub ] exp/dnn4_pretrain-dbn_dnn_smbr/decode_test_it6/wer_4_0.0
+
+# CNN systems (Karel - 25.9.2014)
+# per-frame training
+# 2D-CNN system (from Harish Mallidi, run by Karel - 22.6.2015)
+# per-frame training
+
+
+# Some system combination experiments.
+
+# Some things relating to nnet2 online decoding.
+
+for x in exp/nnet2_online/nnet*/decode*; do grep WER $x/wer_* | utils/best_wer.sh ; done
+# script is not checked in for this, it's pnorm with 800/160 instead of 1000/200.
+# This is the baseline for the nnet+ivector decoding, with no iVector.  This is 
+# better than with the iVector, i.e. the iVector is not working.  I assume this
+# is due to overtraining.  I plan to try this on a larger setup.
+
+
+# normal recipe:
+
+# multi-splice recipe:
+# baseline with multi-splice script
+# provided for reference, modify splice-indexes in local/online/run_nnet2_multisplice.sh
+# to "layer0/-7:-6:-5:-4:-3:-2:-1:0:1:2:3:4:5:6:7" to reproduce these results
+
+# Joint training with WSJ data (call this recipe "multilingual" because it doesn't use
+# a shared phone set).'
+# Note, I didn't tune the settings of this at all, it was just the first try.
+#for x in exp/nnet2_online_wsj/nnet_ms_a_rm_online/decode*; do grep WER $x/wer_* | utils/best_wer.sh ; done
+
+# Discriminative training on top of the previous system (the joint system, with WSJ)... we don't get
+# too much from it on this particular setup.
+for x in exp/nnet2_online_wsj/nnet_ms_a_smbr_0.00005/1/decode_*; do grep WER $x/wer* | utils/best_wer.sh ; done
+
+# LSTM result
+for x in exp/lstm4f/decode*; do [ -d $x ] && grep WER $x/wer_* | utils/best_wer.sh; done
+
+# BLSTM result
+
