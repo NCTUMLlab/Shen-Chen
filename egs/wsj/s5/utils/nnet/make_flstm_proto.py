@@ -125,7 +125,7 @@ if num_tcn_layers!=0:
     
 
   # TCN projection component
-  '''
+  
   if num_hid_layers!=1:
     print "<TCNProjectionComponent> <InputDim> %d <OutputDim> %d <BiasMean> %f <BiasRange> %f <ParamStddev> %f <InputDim1> %d <InputDim2> %d" % \
       (list_tcn_layer_dim[-4]*list_tcn_layer_dim[-3], list_tcn_layer_dim[-4]*list_tcn_layer_dim[-3], \
@@ -141,7 +141,7 @@ if num_tcn_layers!=0:
   if num_dnn_layers!=0:
     print "%s <InputDim> %d <OutputDim> %d" % \
       (o.activation_type, list_dnn_layer_dim[0], list_dnn_layer_dim[0])
-  '''
+  
 projection_output=list_tcn_layer_dim[-2]*list_tcn_layer_dim[-1]
 # normally we won't use more than 2 layers of LSTM
 if o.num_layers == 1:

@@ -10,6 +10,8 @@ learn_rate=0.006
 momentum=0
 l1_penalty=0    # 0.0000005
 l2_penalty=0    # 0.0000001
+o1=0            # 0.0000001  
+o2=0            # 0.0000001
 
 # train TCN 
 dir=exp/tri6i_hybrid_dnnali
